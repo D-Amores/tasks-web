@@ -24,6 +24,9 @@ export function ProjectsPage() {
         <Button variant="outline" onClick={logout}>
           Cerrar sesión
         </Button>
+        <Link to="/search">
+          <Button variant="outline">Buscar</Button>
+        </Link>
       </div>
 
       <div className="flex gap-2">

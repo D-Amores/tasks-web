@@ -3,6 +3,7 @@ import { LoginPage } from "@/features/auth/LoginPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 import { ProjectsPage } from "@/features/projects/ProjectsPage";
 import { ProjectDetailPage } from "@/features/tasks/ProjectDetailPage";
+import { SearchPage } from "@/features/search/searchPage";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<ProjectsPage />} />
         <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
+        <Route path="/search" element={<SearchPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
