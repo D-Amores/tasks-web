@@ -1,17 +1,16 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
-
-function DashboardPlaceholder() {
-  return <div className="p-8">Dashboard (próximo paso)</div>;
-}
+import { ProjectsPage } from "@/features/projects/ProjectsPage";
+import { ProjectDetailPage } from "@/features/tasks/ProjectDetailPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<DashboardPlaceholder />} />
+        <Route path="/dashboard" element={<ProjectsPage />} />
+        <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
