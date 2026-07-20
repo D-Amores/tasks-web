@@ -27,6 +27,9 @@ export function ProjectsPage() {
         <Link to="/search">
           <Button variant="outline">Buscar</Button>
         </Link>
+        <Link to="/chat">
+          <Button variant="outline">Asistente</Button>
+        </Link>
       </div>
 
       <div className="flex gap-2">
