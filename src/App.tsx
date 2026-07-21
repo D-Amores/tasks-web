@@ -5,6 +5,7 @@ import { ProjectsPage } from "@/features/projects/ProjectsPage";
 import { ProjectDetailPage } from "@/features/tasks/ProjectDetailPage";
 import { SearchPage } from "@/features/search/searchPage";
 import { ChatPage } from "@/features/chat/ChatPage";
+import { RegisterPage } from "@/features/auth/RegisterPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/chat" element={<ChatPage />} />
       </Route>
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
