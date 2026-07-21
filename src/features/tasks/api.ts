@@ -9,6 +9,12 @@ export interface Task {
   created_at: string;
 }
 
+interface TaskUpdateInput {
+  taskId: number;
+  title?: string;
+  completed?: boolean;
+}
+
 export function useTasks(projectId: number) {
   return useQuery({
     queryKey: ["projects", projectId, "tasks"],
@@ -65,6 +71,24 @@ export function useDeleteTask(projectId: number) {
   return useMutation({
     mutationFn: async (taskId: number) => {
       await api.delete(`/projects/${projectId}/tasks/${taskId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["projects", projectId, "tasks"],
+      });
+    },
+  });
+}
+
+export function useUpdateTask(projectId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, ...input }: TaskUpdateInput) => {
+      const { data } = await api.patch<Task>(
+        `/projects/${projectId}/tasks/${taskId}`,
+        input,
+      );
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
