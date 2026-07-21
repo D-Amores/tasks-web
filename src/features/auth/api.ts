@@ -18,6 +18,17 @@ interface MeResponse {
   created_at: string;
 }
 
+interface RegisterInput {
+  email: string;
+  password: string;
+}
+
+interface UserResponse {
+  id: number;
+  email: string;
+  created_at: string;
+}
+
 export function useLogin() {
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -39,6 +50,15 @@ export function useLogin() {
 
       setAuth(tokenData.access_token, user);
       return user;
+    },
+  });
+}
+
+export function useRegister() {
+  return useMutation({
+    mutationFn: async (input: RegisterInput) => {
+      const { data } = await api.post<UserResponse>("/auth/register", input);
+      return data;
     },
   });
 }

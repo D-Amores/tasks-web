@@ -13,6 +13,12 @@ interface ProjectCreateInput {
   description?: string;
 }
 
+interface ProjectUpdateInput {
+  id: number;
+  name?: string;
+  description?: string;
+}
+
 export function useProjects() {
   return useQuery({
     queryKey: ["projects"],
@@ -30,6 +36,31 @@ export function useCreateProject() {
     mutationFn: async (input: ProjectCreateInput) => {
       const { data } = await api.post<Project>("/projects", input);
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+}
+
+export function useUpdateProject() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...input }: ProjectUpdateInput) => {
+      const { data } = await api.patch<Project>(`/projects/${id}`, input);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/projects/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });

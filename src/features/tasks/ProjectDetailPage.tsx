@@ -1,14 +1,33 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Pencil, Trash2 } from "lucide-react";
 import {
   useTasks,
   useCreateTask,
-  useToggleTask,
+  useUpdateTask,
   useDeleteTask,
+  type Task,
 } from "@/features/tasks/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 export function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -16,13 +35,35 @@ export function ProjectDetailPage() {
 
   const { data: tasks, isLoading } = useTasks(id);
   const createTask = useCreateTask(id);
-  const toggleTask = useToggleTask(id);
+  const updateTask = useUpdateTask(id);
   const deleteTask = useDeleteTask(id);
+
   const [title, setTitle] = useState("");
+  const [editing, setEditing] = useState<Task | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   function handleCreate() {
     if (!title.trim()) return;
     createTask.mutate(title, { onSuccess: () => setTitle("") });
+  }
+
+  function openEdit(task: Task) {
+    setEditing(task);
+    setEditTitle(task.title);
+  }
+
+  function handleUpdateTitle() {
+    if (!editing) return;
+    updateTask.mutate(
+      { taskId: editing.id, title: editTitle },
+      { onSuccess: () => setEditing(null) },
+    );
+  }
+
+  function handleDelete() {
+    if (deletingId === null) return;
+    deleteTask.mutate(deletingId, { onSuccess: () => setDeletingId(null) });
   }
 
   return (
@@ -58,7 +99,7 @@ export function ProjectDetailPage() {
             <Checkbox
               checked={task.completed}
               onCheckedChange={(checked) =>
-                toggleTask.mutate({
+                updateTask.mutate({
                   taskId: task.id,
                   completed: checked === true,
                 })
@@ -73,12 +114,15 @@ export function ProjectDetailPage() {
             >
               {task.title}
             </span>
+            <Button variant="ghost" size="icon" onClick={() => openEdit(task)}>
+              <Pencil className="size-4" />
+            </Button>
             <Button
               variant="ghost"
-              size="sm"
-              onClick={() => deleteTask.mutate(task.id)}
+              size="icon"
+              onClick={() => setDeletingId(task.id)}
             >
-              Eliminar
+              <Trash2 className="size-4" />
             </Button>
           </li>
         ))}
@@ -88,6 +132,49 @@ export function ProjectDetailPage() {
           </p>
         )}
       </ul>
+
+      <Dialog
+        open={editing !== null}
+        onOpenChange={(open) => !open && setEditing(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar tarea</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleUpdateTitle} disabled={updateTask.isPending}>
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={deletingId !== null}
+        onOpenChange={(open) => !open && setDeletingId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar esta tarea?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

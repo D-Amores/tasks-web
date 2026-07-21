@@ -8,35 +8,35 @@ import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
-import { useLogin } from "@/features/auth/api";
+import { useRegister } from "@/features/auth/api";
 
-const loginSchema = z.object({
+const registerSchema = z.object({
   email: z.string().email("Correo inválido"),
-  password: z.string().min(1, "La contraseña es requerida"),
+  password: z.string().min(8, "Mínimo 8 caracteres"),
 });
 
-type LoginValues = z.infer<typeof loginSchema>;
+type RegisterValues = z.infer<typeof registerSchema>;
 
-export function LoginPage() {
+export function RegisterPage() {
   const navigate = useNavigate();
-  const login = useLogin();
+  const register = useRegister();
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  function onSubmit(values: LoginValues) {
-    login.mutate(values, {
-      onSuccess: () => navigate("/dashboard"),
+  function onSubmit(values: RegisterValues) {
+    register.mutate(values, {
+      onSuccess: () => navigate("/login"),
     });
   }
 
@@ -44,19 +44,14 @@ export function LoginPage() {
     <div className="flex min-h-svh items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Iniciar sesión</CardTitle>
-          <CardDescription>Accede a tu cuenta de API Tasks</CardDescription>
+          <CardTitle>Crear cuenta</CardTitle>
+          <CardDescription>Regístrate para usar API Tasks</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@correo.com"
-                {...register("email")}
-              />
+              <Input id="email" type="email" {...registerField("email")} />
               {errors.email && (
                 <p className="text-sm text-destructive">
                   {errors.email.message}
@@ -65,25 +60,33 @@ export function LoginPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" type="password" {...register("password")} />
+              <Input
+                id="password"
+                type="password"
+                {...registerField("password")}
+              />
               {errors.password && (
                 <p className="text-sm text-destructive">
                   {errors.password.message}
                 </p>
               )}
             </div>
-            {login.isError && (
+            {register.isError && (
               <p className="text-sm text-destructive">
-                Correo o contraseña incorrectos.
+                No se pudo crear la cuenta. ¿Ese correo ya está registrado?
               </p>
             )}
-            <Button type="submit" className="w-full" disabled={login.isPending}>
-              {login.isPending ? "Ingresando..." : "Iniciar sesión"}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={register.isPending}
+            >
+              {register.isPending ? "Creando..." : "Crear cuenta"}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              ¿No tienes cuenta?{" "}
-              <Link to="/register" className="underline">
-                Regístrate
+              ¿Ya tienes cuenta?{" "}
+              <Link to="/login" className="underline">
+                Inicia sesión
               </Link>
             </p>
           </form>
