@@ -74,10 +74,10 @@ Each feature folder pairs a page component with its own `api.ts` — the TanStac
 
 ## Getting started
 
-**Prerequisites**: Node 22+, and the [backend](../api-tasks) running (locally or via Docker) so there's an API to talk to.
+**Prerequisites**: Node 22+, and the [backend](https://github.com/D-Amores/api-tasks) running (locally or via Docker) so there's an API to talk to.
 
 ```bash
-git clone <your-frontend-repo-url> tasks-web
+git clone https://github.com/D-Amores/tasks-web.git tasks-web
 cd tasks-web
 npm install
 cp .env.example .env   # adjust VITE_API_URL if needed
@@ -105,7 +105,7 @@ docker run -p 3000:80 tasks-web
 
 `nginx.conf` includes an SPA fallback (`try_files $uri $uri/ /index.html;`) so client-side routes like `/dashboard` or `/projects/5` don't 404 on a hard refresh — nginx serves `index.html` and React Router takes over from there.
 
-In practice, this frontend is one of four services (`db`, `mcp`, `api`, `web`) orchestrated by the **backend's** `docker-compose.yml`, which builds this repo via a relative `context: ../tasks-web`. See the [backend README](../api-tasks/README.md) for the full multi-service setup and a note on the `network_mode` workaround used between the API and MCP containers.
+In practice, this frontend is one of four services (`db`, `mcp`, `api`, `web`) orchestrated by the **backend's** `docker-compose.yml`, which builds this repo via a relative `context: ../tasks-web`. See the [backend README](https://github.com/D-Amores/api-tasks) for the full multi-service setup and a note on the `network_mode` workaround used between the API and MCP containers.
 
 ## Known limitations & next steps
 
